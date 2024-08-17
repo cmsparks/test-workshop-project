@@ -1,0 +1,17 @@
+{
+	"name": "demo-worker",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"check:types": "run-tsc",
+		"check:lint": "run-eslint-workers",
+		"build:wrangler": "wrangler deploy --minify --outdir ./dist --dry-run"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.4.23",
+		"@cloudflare/workers-types": "^4.20240815.0",
+		"@repo/eslint-config": "workspace:*",
+		"@repo/tools": "workspace:*",
+		"@repo/typescript-config": "workspace:*"
+	}
+}

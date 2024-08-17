@@ -36,3 +36,9 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+.eslintcache
+.cache
+
+# wrangler project
+.dev.vars
+.wrangler/
