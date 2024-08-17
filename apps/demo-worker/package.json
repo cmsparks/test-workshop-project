@@ -1,0 +1,19 @@
+{
+	"name": "demo-worker",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"check:types": "tsc -p tsconfig.json",
+		"check:lint": "eslint . --max-warnings=0 --cache --cache-strategy content --cache-location ./node_modules/.cache/eslint",
+		"build": "wrangler deploy --minify --outdir ./dist --dry-run",
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.4.23",
+		"@cloudflare/workers-types": "^4.20240815.0",
+		"@repo/eslint-config": "workspace:*",
+		"@repo/typescript-config": "workspace:*"
+	}
+}
