@@ -4,8 +4,10 @@
 	"private": true,
 	"scripts": {
 		"check:types": "run-tsc",
-		"check:lint": "run-eslint-workers",
-		"build:wrangler": "wrangler deploy --minify --outdir ./dist --dry-run"
+		"check:lint": "run-eslint",
+		"build": "wrangler deploy --minify --outdir ./dist --dry-run",
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.4.23",
