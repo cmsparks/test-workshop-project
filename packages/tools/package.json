@@ -1,8 +1,0 @@
-{
-	"name": "@repo/tools",
-	"version": "0.1.0",
-	"private": true,
-	"directories": {
-		"bin": "bin"
-	}
-}

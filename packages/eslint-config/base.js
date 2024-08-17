@@ -1,67 +1,40 @@
-const { resolve } = require('node:path')
+import eslint from "@eslint/js";
+import tseslint from 'typescript-eslint';
+import eslintConfigPrettier from "eslint-config-prettier";
+import turboPlugin from "eslint-config-turbo";
 
-const project = resolve(process.cwd(), 'tsconfig.json')
-
-/** @type {import("eslint").Linter.Config} */
-module.exports = {
-	extends: ['turbo', 'prettier', 'eslint:recommended', 'plugin:@typescript-eslint/recommended'],
-	plugins: ['@typescript-eslint'],
-	settings: {
-		'import/resolver': {
-			typescript: {
-				project,
-			},
+export default [
+	eslint.configs.recommended,
+	...tseslint.configs.strict,
+	...tseslint.configs.stylistic,
+	eslintConfigPrettier,
+	// Turborepo hasn't implemented flat config support yet, but there's a (recent) PR and 
+	// we can recreate flat config support from the existing turbo plugin. See more below:
+	// https://github.com/vercel/turborepo/issues/7909#issuecomment-2276621193 and https://github.com/vercel/turborepo/pull/8606
+	{
+		name: 'eslint-config-turbo (recreated flat)',
+		plugins: {
+		  turbo: { rules: turboPlugin.rules },
 		},
 	},
-	ignorePatterns: [
-		// Ignore dotfiles
-		'.*.{js,cjs}',
-		'node_modules/',
-		'dist/',
-	],
-	overrides: [
-		// TypeScript
-		{
-			files: ['**/*.{ts,tsx}'],
-			parser: '@typescript-eslint/parser',
-			parserOptions: {
-				project: true,
-			},
-			rules: {
-                // these rules are copied from WCI
-				'@typescript-eslint/explicit-function-return-type': 'warn',
-				'@typescript-eslint/ban-ts-comment': 'off',
-				'@typescript-eslint/no-unused-vars': [
-					'warn',
-					{
-						argsIgnorePattern: '^_',
-						varsIgnorePattern: '^_',
-						caughtErrorsIgnorePattern: '^_',
-					},
-				],
-				'@typescript-eslint/no-explicit-any': 'warn',
-				'prefer-const': 'warn',
-				'@typescript-eslint/strict-boolean-expressions': 'error',
-				'@typescript-eslint/naming-convention': [
-					'error',
-					// enforce that all function names are in camelCase
-					{
-						selector: ['function'],
-						format: ['camelCase'],
-					},
-				],
-				'no-shadow': 'off',
-				'@typescript-eslint/no-shadow': 'error',
-				'no-mixed-spaces-and-tabs': ['error', 'smart-tabs'],
-			},
-		},
-
-		// Node
-		{
-			files: ['.eslintrc.cjs'],
-			env: {
-				node: true,
-			},
-		},
-	],
-}
+	{
+		// Ignore dotfiles, node_modules, build outputs
+		ignores: [
+			'.*.{js,cjs}',
+			'node_modules/',
+			'dist/',
+		],
+	},
+	{
+		rules: {
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_',
+					caughtErrorsIgnorePattern: '^_',
+				},
+			],
+		}
+	}
+]
