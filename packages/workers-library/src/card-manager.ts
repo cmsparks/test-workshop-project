@@ -1,12 +1,12 @@
-import { Ai, type KVNamespace } from '@cloudflare/workers-types'
+import { Ai, type KVNamespace } from '@cloudflare/workers-types';
 
 export type Card = {
-	title: string
-	description: string
+	title: string;
+	description: string;
 
 	// raw image data in the PNG format
-	imageData: Uint8Array
-}
+	imageData: Uint8Array;
+};
 
 /**
  * Example class that wrapps Cloudflare KV
@@ -23,7 +23,7 @@ export default class TradingCardManager {
 	 * @returns fully populated card data
 	 */
 	async generateCard(title: string, description: string): Promise<Card> {
-		throw new Error('unimplemented')
+		throw new Error('unimplemented');
 	}
 
 	/**
@@ -31,7 +31,7 @@ export default class TradingCardManager {
 	 * @returns card key in KV
 	 */
 	async saveCard(card: Card): Promise<string> {
-		throw new Error('unimplemented')
+		throw new Error('unimplemented');
 	}
 
 	/**
@@ -39,6 +39,6 @@ export default class TradingCardManager {
 	 * @returns card from cardKey
 	 */
 	async getCard(cardKey: string): Promise<Card> {
-		throw new Error('unimplemented')
+		throw new Error('unimplemented');
 	}
 }
