@@ -1,5 +1,7 @@
 import { Ai, type KVNamespace } from '@cloudflare/workers-types';
 
+const KV_KEY_PREFIX = '/card/';
+
 export type Card = {
 	title: string;
 	description: string;
@@ -51,7 +53,16 @@ export default class TradingCardManager {
 	 * @returns card key in KV
 	 */
 	async saveCard(card: Card): Promise<string> {
-		throw new Error('unimplemented');
+		const kvKey = crypto.randomUUID();
+
+		await this.kvBinding.put(kvKey, card.imageData, {
+			metadata: {
+				title: card.title,
+				description: card.description,
+			},
+		});
+
+		return kvKey;
 	}
 
 	/**

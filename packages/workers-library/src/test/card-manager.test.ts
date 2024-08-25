@@ -45,10 +45,14 @@ describe('test CardManager class', () => {
 			imageData: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
 		};
 
-		const kvKey = cardManager.saveCard(cardToSave);
+		const kvKey = await cardManager.saveCard(cardToSave);
 
-		const savedCard: Card | null = await env.KV.get<Card>(`/cards/${kvKey}`, 'json');
-		expect(savedCard).toStrictEqual(cardToSave);
+		const { value, metadata } = await env.KV.getWithMetadata<Card>(kvKey, 'arrayBuffer');
+		const getImageData = new Uint8Array(value as ArrayBuffer);
+
+		expect(metadata?.title).toStrictEqual(cardToSave.title);
+		expect(metadata?.description).toStrictEqual(cardToSave.description);
+		expect(getImageData).toStrictEqual(cardToSave.imageData);
 	});
 
 	it('getCard()', async () => {});
