@@ -38,7 +38,18 @@ describe('test CardManager class', () => {
 		expect(mockAI).toHaveBeenCalledOnce();
 	});
 
-	it('saveCard()', async () => {});
+	it('saveCard()', async () => {
+		const cardToSave: Card = {
+			title: 'testTitle',
+			description: 'testString',
+			imageData: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
+		};
+
+		const kvKey = cardManager.saveCard(cardToSave);
+
+		const savedCard: Card | null = await env.KV.get<Card>(`/cards/${kvKey}`, 'json');
+		expect(savedCard).toStrictEqual(cardToSave);
+	});
 
 	it('getCard()', async () => {});
 });
