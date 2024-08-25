@@ -23,7 +23,27 @@ export default class TradingCardManager {
 	 * @returns fully populated card data
 	 */
 	async generateCard(title: string, description: string): Promise<Card> {
-		throw new Error('unimplemented');
+		// create prompt
+		const input = {
+			prompt: [
+				`Based on the following title and description, generate card artwork for a trading card`,
+				`title: ${title}`,
+				`description: ${description}`,
+			].join('\n'),
+		};
+
+		// generate image data from aiBinding
+		const imageData = await this.aiBinding.run(
+			'@cf/stabilityai/stable-diffusion-xl-base-1.0',
+			input
+		);
+
+		// return card
+		return {
+			title,
+			description,
+			imageData,
+		};
 	}
 
 	/**
