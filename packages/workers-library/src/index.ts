@@ -1,3 +1,3 @@
-import KV from './kv'
+import KV from './kv';
 
-export { KV }
+export { KV };

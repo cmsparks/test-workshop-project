@@ -10,7 +10,7 @@
 
 export interface Env {
 	// simple test environment variable
-	TEST_VAR: string
+	TEST_VAR: string;
 
 	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
 	// MY_KV_NAMESPACE: KVNamespace;
@@ -30,6 +30,6 @@ export interface Env {
 
 export default {
 	async fetch(_request: Request, _env: Env, _ctx: ExecutionContext): Promise<Response> {
-		return new Response('Hello World!')
+		return new Response('Hello World!');
 	},
-}
+};
