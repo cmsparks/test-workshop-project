@@ -13,7 +13,7 @@
 		"typegen": "wrangler types",
 		"preview": "pnpm run build && wrangler pages dev",
 		"cf-typegen": "wrangler types",
-		"e2e": "pnpm exec playwright test",
+		"e2e": "pnpm playwright test",
 		"e2e:ui": "pnpm e2e --ui"
 	},
 	"dependencies": {
