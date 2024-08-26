@@ -1,41 +1,106 @@
-import type { MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import { Form, redirect, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
 
 export const meta: MetaFunction = () => {
 	return [
-		{ title: 'New Remix App' },
+		{ title: 'Trading Card Generator' },
 		{
 			name: 'description',
-			content: 'Welcome to Remix on Cloudflare!',
+			content: 'A trading card generator',
 		},
 	];
 };
 
+export async function loader({ request, context }: LoaderFunctionArgs) {
+	const url = new URL(request.url);
+	const searchParams = url.searchParams;
+	const cardId = searchParams.get('card-id');
+	const retrieveCardDetails = !!cardId;
+	if (retrieveCardDetails) {
+		// TODO: fetch card details from KV
+		return {
+			title: 'a test title',
+			description: 'a test description',
+			img: 'test image',
+		};
+	}
+	return null;
+}
+
+export async function action({ context, request }: ActionFunctionArgs) {
+	// TODO: save card to KV and generate image
+	const cardSaved = await new Promise<boolean>((r) =>
+		setTimeout(() => {
+			r(true);
+		}, 2_000)
+	);
+	if (cardSaved) {
+		return redirect('/?card-id=123');
+	} else {
+		const error = 'an error occurred';
+		return { error };
+	}
+}
+
+type LoaderType = Awaited<ReturnType<typeof loader>>;
+type ActionType = Awaited<ReturnType<typeof action>>;
+
 export default function Index() {
+	const cardDetails = useLoaderData<LoaderType>();
+	const actionResult = useActionData<ActionType>();
+	const actionError = actionResult && 'error' in actionResult ? actionResult.error : null;
+
+	const { state } = useNavigation();
+	const submitting = state === 'submitting';
+
+	if (actionError) {
+		// TODO: to properly implement
+		return (
+			<>
+				<h1>ERROR</h1>
+				<p>{actionError}</p>
+			</>
+		);
+	}
+
 	return (
-		<div className="font-sans p-4">
-			<h1 className="text-3xl">Welcome to Remix on Cloudflare</h1>
-			<ul className="list-disc mt-4 pl-6 space-y-2">
-				<li>
-					<a
-						className="text-blue-700 underline visited:text-purple-900"
-						target="_blank"
-						href="https://remix.run/docs"
-						rel="noreferrer"
-					>
-						Remix Docs
-					</a>
-				</li>
-				<li>
-					<a
-						className="text-blue-700 underline visited:text-purple-900"
-						target="_blank"
-						href="https://developers.cloudflare.com/pages/framework-guides/deploy-a-remix-site/"
-						rel="noreferrer"
-					>
-						Cloudflare Pages Docs - Remix guide
-					</a>
-				</li>
-			</ul>
-		</div>
+		<main className="main">
+			{cardDetails === null ? (
+				<Form className="card-form" method="post">
+					{submitting && (
+						<p className="card-form__loading">
+							<div className="loader"></div>
+						</p>
+					)}
+					<div className={`card ${submitting ? 'card--faded' : ''}`}>
+						<div className="card__image"></div>
+						<input
+							className="card__title card__title--input"
+							type="text"
+							name="card-title"
+							id="card-title"
+							disabled={submitting}
+							placeholder="title"
+							required
+						/>
+						<textarea
+							className="card__description card__description--input"
+							name="card-description"
+							id="card-description"
+							disabled={submitting}
+							placeholder="description..."
+							required
+						></textarea>
+					</div>
+					<button className="btn btn--generate">Generate</button>
+				</Form>
+			) : (
+				<div className="card">
+					<div className="card__image">{cardDetails.img}</div>
+					<p className="card__title">{cardDetails.title}</p>
+					<p className="card__description">{cardDetails.description}</p>
+				</div>
+			)}
+		</main>
 	);
 }
