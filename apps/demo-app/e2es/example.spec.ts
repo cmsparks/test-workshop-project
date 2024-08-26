@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('welcome heading', async ({ page }) => {
+test('generate button', async ({ page }) => {
 	await page.goto('http://localhost:8788/');
-	await expect(page.getByRole('heading', { name: 'Welcome to Remix on Cloudflare' })).toBeVisible();
+	await expect(page.getByText('generate')).toBeVisible();
 });
