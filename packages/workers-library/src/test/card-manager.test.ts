@@ -1,7 +1,6 @@
-import KV from '../kv';
-import { afterEach, assertType, describe, expect, expectTypeOf, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { env } from 'cloudflare:test';
-import TradingCardManager, { Card } from '../card-manager';
+import TradingCardManager, { Card, CardMetadata } from '../card-manager';
 
 afterEach(() => {
 	vi.spyOn(env.AI, 'run').mockRestore();
@@ -25,7 +24,7 @@ describe('test CardManager class', () => {
 		};
 		const mockAI = vi.spyOn(env.AI, 'run').mockResolvedValueOnce(imageData);
 
-		const card = await cardManager.generateCard(title, description);
+		const card = await cardManager.generateCard({ title, description });
 
 		expect(card.title).toStrictEqual(title);
 		expect(card.description).toStrictEqual(description);
@@ -47,7 +46,7 @@ describe('test CardManager class', () => {
 
 		const kvKey = await cardManager.saveCard(cardToSave);
 
-		const { value, metadata } = await env.KV.getWithMetadata<Card>(kvKey, 'arrayBuffer');
+		const { value, metadata } = await env.KV.getWithMetadata<CardMetadata>(kvKey, 'arrayBuffer');
 		const getImageData = new Uint8Array(value as ArrayBuffer);
 
 		expect(metadata?.title).toStrictEqual(cardToSave.title);

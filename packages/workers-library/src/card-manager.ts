@@ -1,16 +1,13 @@
 import { Ai, type KVNamespace } from '@cloudflare/workers-types';
 
-const KV_KEY_PREFIX = '/card/';
-
-export type Card = CardMetadata & {
-	// raw image data in the PNG format
+export interface Card extends CardMetadata {
 	imageData: Uint8Array;
-};
+}
 
-export type CardMetadata = {
+export interface CardMetadata {
 	title: string;
 	description: string;
-};
+}
 
 /**
  * Example class that wrapps Cloudflare KV
@@ -22,17 +19,16 @@ export default class TradingCardManager {
 	) {}
 
 	/**
-	 * @param title title of the trading card
-	 * @param description description of the card
+	 * @param card metadata for the trading card, including the title and description
 	 * @returns fully populated card data
 	 */
-	async generateCard(title: string, description: string): Promise<Card> {
+	async generateAndSaveCard(card: CardMetadata): Promise<Card> {
 		// create prompt
 		const input = {
 			prompt: [
 				`Based on the following title and description, generate card artwork for a trading card`,
-				`title: ${title}`,
-				`description: ${description}`,
+				`title: ${card.title}`,
+				`description: ${card.description}`,
 			].join('\n'),
 		};
 
@@ -44,8 +40,7 @@ export default class TradingCardManager {
 
 		// return card
 		return {
-			title,
-			description,
+			...card,
 			imageData,
 		};
 	}
