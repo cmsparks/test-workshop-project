@@ -1,5 +1,7 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { Form, redirect, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
+import confetti from 'canvas-confetti';
+import { useEffect } from 'react';
 
 export const meta: MetaFunction = () => {
 	return [
@@ -17,8 +19,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	const cardId = searchParams.get('card-id');
 	const retrieveCardDetails = !!cardId;
 	if (retrieveCardDetails) {
+		const isNew = !!searchParams.get('new');
 		// TODO: fetch card details from KV
 		return {
+			isNew,
 			title: 'a test title',
 			description: 'a test description',
 			img: 'test image',
@@ -35,7 +39,7 @@ export async function action({ context, request }: ActionFunctionArgs) {
 		}, 2_000)
 	);
 	if (cardSaved) {
-		return redirect('/?card-id=123');
+		return redirect('/?card-id=123&new=1');
 	} else {
 		const error = 'an error occurred';
 		return { error };
@@ -52,6 +56,15 @@ export default function Index() {
 
 	const { state } = useNavigation();
 	const submitting = state === 'submitting';
+
+	useEffect(() => {
+		if (cardDetails?.isNew) {
+			confetti({
+				particleCount: 150,
+				spread: 90,
+			});
+		}
+	}, [cardDetails]);
 
 	if (actionError) {
 		// TODO: to properly implement

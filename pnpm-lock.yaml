@@ -41,6 +41,9 @@ importers:
       '@remix-run/react':
         specifier: ^2.11.1
         version: 2.11.2(react-dom@18.3.1)(react@18.3.1)(typescript@5.5.4)
+      canvas-confetti:
+        specifier: ^1.9.3
+        version: 1.9.3
       isbot:
         specifier: ^4.1.0
         version: 4.4.0
@@ -60,6 +63,9 @@ importers:
       '@remix-run/dev':
         specifier: ^2.11.1
         version: 2.11.2(@remix-run/react@2.11.2)(@types/node@22.4.0)(typescript@5.5.4)(vite@5.4.1)(wrangler@3.57.1)
+      '@types/canvas-confetti':
+        specifier: ^1.6.4
+        version: 1.6.4
       '@types/node':
         specifier: ^22.4.0
         version: 22.4.0
@@ -1899,6 +1905,10 @@ packages:
       '@types/estree': 1.0.5
     dev: true
 
+  /@types/canvas-confetti@1.6.4:
+    resolution: {integrity: sha512-fNyZ/Fdw/Y92X0vv7B+BD6ysHL4xVU5dJcgzgxLdGbn8O3PezZNIJpml44lKM0nsGur+o/6+NZbZeNTt00U1uA==}
+    dev: true
+
   /@types/cookie@0.6.0:
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
 
@@ -2775,6 +2785,10 @@ packages:
   /caniuse-lite@1.0.30001651:
     resolution: {integrity: sha512-9Cf+Xv1jJNe1xPZLGuUXLNkE1BoDkqRqYyFJ9TDYSqhduqA4hu4oR9HluGoWYQC/aj8WHjsGVV+bwkh0+tegRg==}
     dev: true
+
+  /canvas-confetti@1.9.3:
+    resolution: {integrity: sha512-rFfTURMvmVEX1gyXFgn5QMn81bYk70qa0HLzcIOSVEyl57n6o9ItHeBtUSWdvKAPY0xlvBHno4/v3QPrT83q9g==}
+    dev: false
 
   /capnp-ts@0.7.0:
     resolution: {integrity: sha512-XKxXAC3HVPv7r674zP0VC3RTXz+/JKhfyw94ljvF80yynK6VkTnqE3jMuN8b3dUVmmc43TjyxjW4KTsmB3c86g==}
