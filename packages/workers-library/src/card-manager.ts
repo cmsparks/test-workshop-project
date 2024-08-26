@@ -2,12 +2,14 @@ import { Ai, type KVNamespace } from '@cloudflare/workers-types';
 
 const KV_KEY_PREFIX = '/card/';
 
-export type Card = {
-	title: string;
-	description: string;
-
+export type Card = CardMetadata & {
 	// raw image data in the PNG format
 	imageData: Uint8Array;
+};
+
+export type CardMetadata = {
+	title: string;
+	description: string;
 };
 
 /**
@@ -69,7 +71,29 @@ export default class TradingCardManager {
 	 * @param cardKey card key to get
 	 * @returns card from cardKey
 	 */
-	async getCard(cardKey: string): Promise<Card> {
-		throw new Error('unimplemented');
+	async getCard(cardKey: string): Promise<Card | null> {
+		const { value, metadata } = await this.kvBinding.getWithMetadata<CardMetadata>(
+			cardKey,
+			'arrayBuffer'
+		);
+
+		if (!value) {
+			// key not found
+			return null;
+		}
+
+		if (metadata === null) {
+			throw new Error('No card metadata');
+		}
+
+		if (!('title' in metadata) || !('description' in metadata)) {
+			throw new Error('Invalid card metadata');
+		}
+
+		return {
+			title: metadata.title,
+			description: metadata.description,
+			imageData: new Uint8Array(value),
+		};
 	}
 }
