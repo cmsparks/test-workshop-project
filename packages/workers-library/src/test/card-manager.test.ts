@@ -1,5 +1,5 @@
 import KV from '../kv';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, assertType, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { env } from 'cloudflare:test';
 import TradingCardManager, { Card } from '../card-manager';
 
@@ -55,5 +55,25 @@ describe('test CardManager class', () => {
 		expect(getImageData).toStrictEqual(cardToSave.imageData);
 	});
 
-	it('getCard()', async () => {});
+	it('getCard()', async () => {
+		const nullCard = await cardManager.getCard('nonexistent-key');
+
+		expect(nullCard).toBeNull();
+
+		const imageData = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
+
+		const uuid = crypto.randomUUID();
+
+		await env.KV.put(uuid, imageData, {
+			metadata: {
+				title: 'testTitle',
+				description: 'description',
+			},
+		});
+
+		const card = await cardManager.getCard(uuid);
+		expect(card?.title).toStrictEqual('testTitle');
+		expect(card?.description).toStrictEqual('description');
+		expect(card?.imageData).toStrictEqual(imageData);
+	});
 });
