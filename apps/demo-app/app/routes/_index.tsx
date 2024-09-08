@@ -88,6 +88,7 @@ export default function Index() {
 					<div className={`card ${submitting ? 'card--faded' : ''}`}>
 						<div className="card__image"></div>
 						<input
+							data-testid="card-title-input"
 							className="card__title card__title--input"
 							type="text"
 							name="card-title"
@@ -97,6 +98,7 @@ export default function Index() {
 							required
 						/>
 						<textarea
+							data-testid="card-description-input"
 							className="card__description card__description--input"
 							name="card-description"
 							id="card-description"
@@ -105,13 +107,21 @@ export default function Index() {
 							required
 						></textarea>
 					</div>
-					<button className="btn btn--generate">Generate</button>
+					<button data-testid="card-generate-btn" className="btn btn--generate">
+						Generate
+					</button>
 				</Form>
 			) : (
 				<div className="card">
-					<div className="card__image">{cardDetails.img}</div>
-					<p className="card__title">{cardDetails.title}</p>
-					<p className="card__description">{cardDetails.description}</p>
+					<div className="card__image" data-testid="card-img">
+						{cardDetails.img}
+					</div>
+					<p className="card__title" data-testid="card-title-output">
+						{cardDetails.title}
+					</p>
+					<p data-testid="card-description-output" className="card__description">
+						{cardDetails.description}
+					</p>
 				</div>
 			)}
 		</main>
