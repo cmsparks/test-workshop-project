@@ -14,7 +14,8 @@
 		"preview": "pnpm run build && wrangler pages dev",
 		"cf-typegen": "wrangler types",
 		"e2e": "pnpm playwright test",
-		"e2e:ui": "pnpm e2e --ui"
+		"e2e:ui": "pnpm e2e --ui",
+		"test-ct": "playwright test -c playwright-ct.config.ts"
 	},
 	"dependencies": {
 		"@remix-run/cloudflare": "^2.11.1",
@@ -27,7 +28,8 @@
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20240815.0",
-		"@playwright/test": "^1.46.1",
+		"@playwright/experimental-ct-react": "^1.47.0",
+		"@playwright/test": "^1.47.0",
 		"@remix-run/dev": "^2.11.1",
 		"@types/canvas-confetti": "^1.6.4",
 		"@types/node": "^22.4.0",

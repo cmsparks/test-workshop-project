@@ -3,6 +3,8 @@ import { Form, redirect, useActionData, useLoaderData, useNavigation } from '@re
 import confetti from 'canvas-confetti';
 import { useEffect } from 'react';
 
+import Card from '@components/card';
+
 export const meta: MetaFunction = () => {
 	return [
 		{ title: 'Trading Card Generator' },
@@ -112,17 +114,7 @@ export default function Index() {
 					</button>
 				</Form>
 			) : (
-				<div className="card">
-					<div className="card__image" data-testid="card-img">
-						{cardDetails.img}
-					</div>
-					<p className="card__title" data-testid="card-title-output">
-						{cardDetails.title}
-					</p>
-					<p data-testid="card-description-output" className="card__description">
-						{cardDetails.description}
-					</p>
-				</div>
+				<Card cardDetails={cardDetails}></Card>
 			)}
 		</main>
 	);
