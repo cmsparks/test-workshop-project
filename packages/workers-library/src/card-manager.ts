@@ -1,28 +1,61 @@
-import { Ai, type KVNamespace } from '@cloudflare/workers-types';
-
-export interface Card extends CardMetadata {
-	imageData: Uint8Array;
-}
-
-export interface CardMetadata {
+export interface Card {
 	title: string;
 	description: string;
+	imageUrl: string;
+}
+
+// This could be replaced with a Zod validator
+function isCard(card: unknown): card is Card {
+	return (
+		typeof card === 'object' &&
+		card !== null &&
+		'title' in card &&
+		typeof card.title === 'string' &&
+		'description' in card &&
+		typeof card.description === 'string' &&
+		'imageUrl' in card &&
+		typeof card.imageUrl === 'string'
+	);
 }
 
 /**
- * Example class that wrapps Cloudflare KV
+ * Trading card manager class that wraps KV, R2, and Workers AI. Handles all of our "business" logic
  */
 export default class TradingCardManager {
 	constructor(
 		public kvBinding: KVNamespace,
-		public aiBinding: Ai
+		public aiBinding: Ai,
+		public r2Binding: R2Bucket,
+		public bucketDomain: string
 	) {}
+
+	/**
+	 * @param card card title and description to generate
+	 * @returns card key in KV
+	 */
+	async generateAndSaveCard(card: Pick<Card, 'title' | 'description'>): Promise<string> {
+		const key = crypto.randomUUID();
+
+		const cardToSave = {
+			...card,
+			imageUrl: `https://${this.bucketDomain}/${key}`,
+		};
+
+		const cardData = await this.generateCardArt(card);
+
+		await Promise.all([
+			this.r2Binding.put(key, cardData),
+			this.kvBinding.put(key, JSON.stringify(cardToSave)),
+		]);
+
+		return key;
+	}
 
 	/**
 	 * @param card metadata for the trading card, including the title and description
 	 * @returns fully populated card data
 	 */
-	async generateAndSaveCard(card: CardMetadata): Promise<Card> {
+	async generateCardArt(card: Pick<Card, 'title' | 'description'>): Promise<Uint8Array> {
 		// create prompt
 		const input = {
 			prompt: [
@@ -39,27 +72,7 @@ export default class TradingCardManager {
 		);
 
 		// return card
-		return {
-			...card,
-			imageData,
-		};
-	}
-
-	/**
-	 * @param card card data to save to KV
-	 * @returns card key in KV
-	 */
-	async saveCard(card: Card): Promise<string> {
-		const kvKey = crypto.randomUUID();
-
-		await this.kvBinding.put(kvKey, card.imageData, {
-			metadata: {
-				title: card.title,
-				description: card.description,
-			},
-		});
-
-		return kvKey;
+		return imageData;
 	}
 
 	/**
@@ -67,28 +80,17 @@ export default class TradingCardManager {
 	 * @returns card from cardKey
 	 */
 	async getCard(cardKey: string): Promise<Card | null> {
-		const { value, metadata } = await this.kvBinding.getWithMetadata<CardMetadata>(
-			cardKey,
-			'arrayBuffer'
-		);
+		const card = await this.kvBinding.get(cardKey, 'json');
 
-		if (!value) {
+		if (!card) {
 			// key not found
 			return null;
 		}
 
-		if (metadata === null) {
-			throw new Error('No card metadata');
+		if (!isCard(card)) {
+			throw new Error('Invalid card returned from KV');
 		}
 
-		if (!('title' in metadata) || !('description' in metadata)) {
-			throw new Error('Invalid card metadata');
-		}
-
-		return {
-			title: metadata.title,
-			description: metadata.description,
-			imageData: new Uint8Array(value),
-		};
+		return card;
 	}
 }

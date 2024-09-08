@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, assert, describe, expect, it, vi } from 'vitest';
 import { env } from 'cloudflare:test';
-import TradingCardManager, { Card, CardMetadata } from '../card-manager';
+import TradingCardManager, { Card } from '../card-manager';
 
 afterEach(() => {
 	vi.spyOn(env.AI, 'run').mockRestore();
@@ -8,11 +8,11 @@ afterEach(() => {
 
 describe('test CardManager class', () => {
 	// type cast is due to some weirdness with the AI workers types. See env.ts
-	const cardManager = new TradingCardManager(env.KV, env.AI as Ai);
+	const cardManager = new TradingCardManager(env.KV, env.AI as Ai, env.R2, env.BUCKET_DOMAIN);
 
-	it('generateCard()', async () => {
+	it('generateAndSaveCard()', async () => {
 		const title = 'test title';
-		const description = 'test string';
+		const description = 'test description';
 
 		const imageData = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
 		const expectedPrompt = {
@@ -24,11 +24,43 @@ describe('test CardManager class', () => {
 		};
 		const mockAI = vi.spyOn(env.AI, 'run').mockResolvedValueOnce(imageData);
 
-		const card = await cardManager.generateCard({ title, description });
+		const cardKey = await cardManager.generateAndSaveCard({ title, description });
 
-		expect(card.title).toStrictEqual(title);
-		expect(card.description).toStrictEqual(description);
-		expect(card.imageData).toStrictEqual(imageData);
+		expect(mockAI).toHaveBeenCalledWith(
+			'@cf/stabilityai/stable-diffusion-xl-base-1.0',
+			expectedPrompt
+		);
+		expect(mockAI).toHaveBeenCalledOnce();
+
+		// validate data in R2
+		const r2cardData = await env.R2.get(cardKey);
+		assert(r2cardData !== null);
+		expect(new Uint8Array(await r2cardData.arrayBuffer())).toStrictEqual(imageData);
+
+		// and in KV
+		const kvCard = (await env.KV.get(cardKey, 'json')) as Card;
+		expect(kvCard.title).toStrictEqual('test title');
+		expect(kvCard.description).toStrictEqual('test description');
+		expect(kvCard.imageUrl).toStrictEqual(`https://${env.BUCKET_DOMAIN}/${cardKey}`);
+	});
+
+	it('generateCardArt()', async () => {
+		const title = 'test title';
+		const description = 'test description';
+
+		const imageData = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
+		const expectedPrompt = {
+			prompt: [
+				`Based on the following title and description, generate card artwork for a trading card`,
+				`title: ${title}`,
+				`description: ${description}`,
+			].join('\n'),
+		};
+		const mockAI = vi.spyOn(env.AI, 'run').mockResolvedValueOnce(imageData);
+
+		const cardData = await cardManager.generateCardArt({ title, description });
+
+		expect(cardData).toStrictEqual(imageData);
 
 		expect(mockAI).toHaveBeenCalledWith(
 			'@cf/stabilityai/stable-diffusion-xl-base-1.0',
@@ -37,42 +69,27 @@ describe('test CardManager class', () => {
 		expect(mockAI).toHaveBeenCalledOnce();
 	});
 
-	it('saveCard()', async () => {
-		const cardToSave: Card = {
-			title: 'testTitle',
-			description: 'testString',
-			imageData: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
-		};
-
-		const kvKey = await cardManager.saveCard(cardToSave);
-
-		const { value, metadata } = await env.KV.getWithMetadata<CardMetadata>(kvKey, 'arrayBuffer');
-		const getImageData = new Uint8Array(value as ArrayBuffer);
-
-		expect(metadata?.title).toStrictEqual(cardToSave.title);
-		expect(metadata?.description).toStrictEqual(cardToSave.description);
-		expect(getImageData).toStrictEqual(cardToSave.imageData);
-	});
-
-	it('getCard()', async () => {
+	it('getCard(): null card', async () => {
 		const nullCard = await cardManager.getCard('nonexistent-key');
 
 		expect(nullCard).toBeNull();
+	});
 
-		const imageData = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
-
+	it('getCard(): non-null card', async () => {
 		const uuid = crypto.randomUUID();
 
-		await env.KV.put(uuid, imageData, {
-			metadata: {
-				title: 'testTitle',
-				description: 'description',
-			},
-		});
+		await env.KV.put(
+			uuid,
+			JSON.stringify({
+				title: 'test title',
+				description: 'test description',
+				imageUrl: 'https://example.com/testKey',
+			})
+		);
 
 		const card = await cardManager.getCard(uuid);
-		expect(card?.title).toStrictEqual('testTitle');
-		expect(card?.description).toStrictEqual('description');
-		expect(card?.imageData).toStrictEqual(imageData);
+		expect(card?.title).toStrictEqual('test title');
+		expect(card?.description).toStrictEqual('test description');
+		expect(card?.imageUrl).toStrictEqual('https://example.com/testKey');
 	});
 });
