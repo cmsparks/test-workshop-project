@@ -1,12 +1,22 @@
+import { useEffect } from 'react';
+
 type Props = {
 	cardDetails: {
+		isNew?: boolean;
 		img: string;
 		title: string;
 		description: string;
 	};
+	newCardEffect: () => void;
 };
 
-export default ({ cardDetails }: Props) => {
+export default ({ cardDetails, newCardEffect }: Props) => {
+	useEffect(() => {
+		if (cardDetails.isNew) {
+			newCardEffect();
+		}
+	}, [cardDetails]);
+
 	return (
 		<div className="card">
 			<div className="card__image" data-testid="card-img">
