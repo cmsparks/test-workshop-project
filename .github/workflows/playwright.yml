@@ -19,6 +19,8 @@ jobs:
         run: pnpm --filter demo-app exec playwright install --with-deps
       - name: Run Playwright tests
         run: pnpm --filter demo-app exec playwright test
+      - name: Run Playwright component testing
+        run: pnpm --filter demo-app test-ct
       - uses: actions/upload-artifact@v4
         if: always()
         with:
