@@ -9,5 +9,7 @@ test('card generation', async ({ page }) => {
 	await page.getByTestId('card-generate-btn').click();
 	await expect(page.getByTestId('card-img')).toBeVisible();
 	await expect(page.getByTestId('card-title-output')).toBeVisible();
+	await expect(page.getByTestId('card-title-output')).toContainText('a test title');
 	await expect(page.getByTestId('card-description-output')).toBeVisible();
+	await expect(page.getByTestId('card-description-output')).toContainText('a test description');
 });
