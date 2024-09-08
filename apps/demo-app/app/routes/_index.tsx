@@ -81,9 +81,9 @@ export default function Index() {
 			{cardDetails === null ? (
 				<Form className="card-form" method="post">
 					{submitting && (
-						<p className="card-form__loading">
+						<div className="card-form__loading">
 							<div className="loader"></div>
-						</p>
+						</div>
 					)}
 					<div className={`card ${submitting ? 'card--faded' : ''}`}>
 						<div className="card__image"></div>
