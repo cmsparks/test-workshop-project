@@ -1,7 +1,8 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { Form, redirect, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
+
+import Card from '@components/card';
 import confetti from 'canvas-confetti';
-import { useEffect } from 'react';
 
 export const meta: MetaFunction = () => {
 	return [
@@ -57,15 +58,6 @@ export default function Index() {
 	const { state } = useNavigation();
 	const submitting = state === 'submitting';
 
-	useEffect(() => {
-		if (cardDetails?.isNew) {
-			confetti({
-				particleCount: 150,
-				spread: 90,
-			});
-		}
-	}, [cardDetails]);
-
 	if (actionError) {
 		// TODO: to properly implement
 		return (
@@ -112,17 +104,15 @@ export default function Index() {
 					</button>
 				</Form>
 			) : (
-				<div className="card">
-					<div className="card__image" data-testid="card-img">
-						{cardDetails.img}
-					</div>
-					<p className="card__title" data-testid="card-title-output">
-						{cardDetails.title}
-					</p>
-					<p data-testid="card-description-output" className="card__description">
-						{cardDetails.description}
-					</p>
-				</div>
+				<Card
+					cardDetails={cardDetails}
+					newCardEffect={() =>
+						confetti({
+							particleCount: 150,
+							spread: 90,
+						})
+					}
+				></Card>
 			)}
 		</main>
 	);

@@ -14,7 +14,8 @@
 		"preview": "pnpm run build && wrangler pages dev",
 		"cf-typegen": "wrangler types",
 		"e2e": "pnpm playwright test",
-		"e2e:ui": "pnpm e2e --ui"
+		"e2e:ui": "pnpm e2e --ui",
+		"test-ct": "playwright test -c playwright-ct.config.ts"
 	},
 	"dependencies": {
 		"@remix-run/cloudflare": "^2.11.1",
@@ -27,12 +28,14 @@
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20240815.0",
-		"@playwright/test": "^1.46.1",
+		"@playwright/experimental-ct-react": "^1.47.0",
+		"@playwright/test": "^1.47.0",
 		"@remix-run/dev": "^2.11.1",
 		"@types/canvas-confetti": "^1.6.4",
 		"@types/node": "^22.4.0",
 		"@types/react": "^18.2.20",
 		"@types/react-dom": "^18.2.7",
+		"@types/sinon": "^17.0.3",
 		"@typescript-eslint/eslint-plugin": "^6.7.4",
 		"@typescript-eslint/parser": "^6.7.4",
 		"autoprefixer": "^10.4.19",
@@ -43,6 +46,7 @@
 		"eslint-plugin-react": "^7.33.2",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"postcss": "^8.4.38",
+		"sinon": "^18.0.0",
 		"typescript": "^5.1.6",
 		"vite": "^5.1.0",
 		"vite-tsconfig-paths": "^4.2.1",
