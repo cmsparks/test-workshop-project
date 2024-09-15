@@ -85,7 +85,8 @@ module.exports = {
           },
         ],
         "import/no-named-as-default-member": 0,
-        "import/no-unresolved": [2, { ignore: ['cloudflare:test'] }]
+        "import/no-unresolved": [2, { ignore: ['cloudflare:test'] }],
+        "no-constant-condition": ["error", { "checkLoops": false }]
       }
     },
 

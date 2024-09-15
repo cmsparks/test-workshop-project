@@ -17,8 +17,8 @@
 		"test:e2e": "pnpm playwright test",
 		"test:e2e:ui": "pnpm test:e2e --ui",
 		"test:ct": "playwright test -c playwright-ct.config.ts",
-		"test:workers": "vitest run",
-		"build:mocks": "wrangler deploy --minify --outdir ./dist --dry-run --name 'mock-ai' --compatibility-date '2024-03-12' ./lib/test/ai.mock.ts"
+		"test:vitest": "vitest run",
+		"build:mocks": "wrangler deploy --minify --outdir ./dist --dry-run --name 'mock-ai' --compatibility-date '2024-03-12' ./card-manager/test/ai.mock.ts"
 	},
 	"dependencies": {
 		"@remix-run/cloudflare": "^2.11.1",
