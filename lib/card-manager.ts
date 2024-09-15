@@ -1,3 +1,22 @@
+/**
+ *  We have to redefine the AI type here for a number of reasons.
+ * 1) `AI.run` defaults to using image to text models, which causes type
+ * errors while testing. I believe there's a fix in progress, which would
+ * allow us to specify the types for `.run` via some generics. See:
+ * https://github.com/cloudflare/workerd/issues/2181
+ *
+ * 2) The types for AiTextToImageOutput are incorrect. It is defined as an
+ * Uint8Array, but is actually a ReadableStream. See:
+ * https://github.com/cloudflare/workerd/issues/2470
+ * */
+export interface AiImageModel {
+	run: (
+		model: BaseAiTextToImageModels,
+		input: AiTextToImageInput,
+		options?: AiOptions
+	) => Promise<ReadableStream<Uint8Array>>;
+}
+
 export interface Card {
 	title: string;
 	description: string;
@@ -24,7 +43,7 @@ function isCard(card: unknown): card is Card {
 export default class TradingCardManager {
 	constructor(
 		public kvBinding: KVNamespace,
-		public aiBinding: Ai,
+		public aiBinding: AiImageModel,
 		public r2Binding: R2Bucket,
 		public bucketDomain: string
 	) {}
@@ -43,8 +62,31 @@ export default class TradingCardManager {
 
 		const cardData = await this.generateCardArt(card);
 
+		// we don't know the length of the readable stream returned from ai.run(),
+		// so we need to read it all into a buffer so we can use it in r2Binding.put()
+
+		// 1) read the entire ReadableStream to get the data and length
+		const reader = cardData.getReader();
+		const buffer = [];
+		let totalLength = 0;
+		while (true) {
+			const { done, value } = await reader.read();
+			console.log('uploading part');
+			if (done) break;
+			buffer.push(value);
+			totalLength += value.byteLength;
+		}
+
+		// convert to a statically sized Uint8Array()
+		const arrayBuffer = new Uint8Array(totalLength);
+		let offset = 0;
+		for (const value of buffer) {
+			arrayBuffer.set(value, offset);
+			offset += value.byteLength;
+		}
+
 		await Promise.all([
-			this.r2Binding.put(key, cardData),
+			this.r2Binding.put(key, arrayBuffer),
 			this.kvBinding.put(key, JSON.stringify(cardToSave)),
 		]);
 
@@ -55,7 +97,9 @@ export default class TradingCardManager {
 	 * @param card metadata for the trading card, including the title and description
 	 * @returns fully populated card data
 	 */
-	async generateCardArt(card: Pick<Card, 'title' | 'description'>): Promise<Uint8Array> {
+	async generateCardArt(
+		card: Pick<Card, 'title' | 'description'>
+	): Promise<ReadableStream<Uint8Array>> {
 		// create prompt
 		const input = {
 			prompt: [

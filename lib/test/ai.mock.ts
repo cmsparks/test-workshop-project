@@ -1,24 +1,13 @@
-// We have to redefine the AI type here because `AI.run` defaults to using
-// image to text models, which causes type errors. I believe there's a fix in progress,
-// which would allow us to specify the types for `.run` via some generics
+import { AiImageModel } from 'lib/card-manager';
 
-// see: https://github.com/cloudflare/workerd/issues/2181
-export interface MockAiImageModel {
-	run: (
-		model: BaseAiTextToImageModels,
-		input: AiTextToImageInput,
-		options?: AiOptions
-	) => Promise<AiTextToImageOutput>;
-}
-
-class MockAi implements MockAiImageModel {
+class MockAi implements AiImageModel {
 	async run(
 		model: BaseAiTextToImageModels,
 		prompt: AiTextToImageInput,
 		options?: AiOptions
-	): Promise<AiTextToImageOutput> {
+	): Promise<ReadableStream<Uint8Array>> {
 		console.warn('Unmocked AI.run: ', model, prompt, options);
-		return new Uint8Array();
+		return new Blob([new Uint8Array()]).stream();
 	}
 }
 
