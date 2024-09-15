@@ -16,7 +16,7 @@ jobs:
       - name: Run Playwright tests
         run: pnpm exec playwright test
       - name: Run Playwright component testing
-        run: pnpm test-ct
+        run: pnpm test:ct
       - uses: actions/upload-artifact@v4
         if: always()
         with:
