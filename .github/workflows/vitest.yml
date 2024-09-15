@@ -2,8 +2,12 @@ name: Vitest workers-library
 on: push
 jobs:
   test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-13, windows-2022, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 60
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
