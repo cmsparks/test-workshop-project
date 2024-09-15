@@ -1,4 +1,4 @@
-import { AiImageModel } from 'lib/card-manager';
+import { AiImageModel } from 'card-manager/card-manager';
 
 class MockAi implements AiImageModel {
 	async run(

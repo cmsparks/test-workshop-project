@@ -1,5 +1,3 @@
-import { MockAiImageModel } from './ai.mock';
-
 declare module 'cloudflare:test' {
 	interface ProvidedEnv {
 		KV: KVNamespace;

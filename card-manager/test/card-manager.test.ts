@@ -1,6 +1,6 @@
 import { afterEach, assert, describe, expect, it, vi } from 'vitest';
 import { env } from 'cloudflare:test';
-import TradingCardManager, { Card } from '../card-manager';
+import TradingCardManager, { AiImageModel, Card } from '../card-manager';
 
 afterEach(() => {
 	vi.spyOn(env.AI, 'run').mockRestore();
@@ -19,7 +19,7 @@ describe('test CardManager class', () => {
 		const title = 'test title';
 		const description = 'test description';
 
-		// creat a large array that gets buffered into multiple pieces
+		// create a large array that gets buffered into multiple chunks
 		const imageArray = Uint8Array.from({ length: 100000 }, () => Math.floor(Math.random() * 100));
 		const imageBlob = new Blob([imageArray]);
 		const stream = imageBlob.stream();

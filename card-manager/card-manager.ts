@@ -77,7 +77,7 @@ export default class TradingCardManager {
 			totalLength += value.byteLength;
 		}
 
-		// convert to a statically sized Uint8Array()
+		// 2) convert to a statically sized Uint8Array()
 		const arrayBuffer = new Uint8Array(totalLength);
 		let offset = 0;
 		for (const value of buffer) {
