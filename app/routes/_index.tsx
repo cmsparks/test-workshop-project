@@ -14,7 +14,7 @@ export const meta: MetaFunction = () => {
 	];
 };
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
+export async function loader({ request, context: _context }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
 	const searchParams = url.searchParams;
 	const cardId = searchParams.get('card-id');
@@ -32,7 +32,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	return null;
 }
 
-export async function action({ context, request }: ActionFunctionArgs) {
+export async function action({ context: _context, request: _request }: ActionFunctionArgs) {
 	// TODO: save card to KV and generate image
 	const cardSaved = await new Promise<boolean>((r) =>
 		setTimeout(() => {

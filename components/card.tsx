@@ -15,7 +15,7 @@ export default ({ cardDetails, newCardEffect }: Props) => {
 		if (cardDetails.isNew) {
 			newCardEffect();
 		}
-	}, [cardDetails]);
+	}, [cardDetails, newCardEffect]);
 
 	return (
 		<div className="card">

@@ -2,6 +2,7 @@ import { defineWorkersProject } from '@cloudflare/vitest-pool-workers/config';
 
 export default defineWorkersProject({
 	test: {
+		include: ['./lib/**/*.test.ts'],
 		globalSetup: ['./global-setup.ts'],
 		hookTimeout: 60_000,
 		poolOptions: {
