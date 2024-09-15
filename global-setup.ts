@@ -5,7 +5,7 @@ export default function (): void {
 	const label = 'Built workers-library dependencies';
 	console.time(label);
 	// build mock-ra
-	childProcess.execSync('pnpm run --filter @repo/workers-library build:mocks', {
+	childProcess.execSync('pnpm run build:mocks', {
 		cwd: __dirname,
 	});
 	console.timeEnd(label);

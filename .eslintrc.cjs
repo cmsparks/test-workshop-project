@@ -48,6 +48,9 @@ module.exports = {
           typescript: {},
         },
       },
+      rules: {
+        "react/display-name": 0
+      }
     },
 
     // Typescript
@@ -63,6 +66,7 @@ module.exports = {
           },
           typescript: {
             alwaysTryTypes: true,
+            project: 'tsconfig.json'
           },
         },
       },
@@ -71,6 +75,18 @@ module.exports = {
         "plugin:import/recommended",
         "plugin:import/typescript",
       ],
+      rules: {
+        '@typescript-eslint/no-unused-vars': [
+          'warn',
+          {
+            argsIgnorePattern: '^_',
+            varsIgnorePattern: '^_',
+            caughtErrorsIgnorePattern: '^_',
+          },
+        ],
+        "import/no-named-as-default-member": 0,
+        "import/no-unresolved": [2, { ignore: ['cloudflare:test'] }]
+      }
     },
 
     // Node
