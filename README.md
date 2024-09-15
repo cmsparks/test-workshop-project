@@ -1,17 +1,46 @@
 # React Summit US Nov 2024 Demo App
 
-Repo for our CF Devplat workshop. We're using Turborepo and PNPM to manage the project.
+Repo for our CF Devplat workshop. We're using PNPM to manage the project.
 
-## Important directories
+## Development
 
-- `/packages/eslint-config`:Reusable eslint configs for our packages/apps
-- `/packages/tools`: Useful tools/scripts/snippets which can be reused throughout the repo
-- `/packages/typescript-config`: Reusable typescript configs for our packages/apps
-- `/apps/demo-worker`: Demo worker to scaffold/test our turborepo configuration
+Run the dev server:
 
-## Turbo tasks
+```sh
+npm run dev
+```
 
-- `pnpm turbo build`: Builds everything in the repo (only 1 worker)
-- `pnpm turbo deploy`: Deploys everything in the repo (currently only 1 worker)
-- `pnpm turbo check`: Runs lint and typecheck tasks across all packages/apps in the repo
-- `pnpm turbo dev`: Runs everything in dev. This is currently a bit broken due to turbo, we should probably just spin up a dev environment through a separate script rather than through turbo
+To run Wrangler:
+
+```sh
+npm run build
+npm run start
+```
+
+## Typegen
+
+Generate types for your Cloudflare bindings in `wrangler.toml`:
+
+```sh
+npm run typegen
+```
+
+You will need to rerun typegen whenever you make changes to `wrangler.toml`.
+
+## Deployment
+
+First, build your app for production:
+
+```sh
+npm run build
+```
+
+Then, deploy your app to Cloudflare Pages:
+
+```sh
+npm run deploy
+```
+
+## Styling
+
+This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
