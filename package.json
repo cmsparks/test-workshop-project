@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "remix vite:build",
-		"deploy": "pnpm run build && wrangler pages deploy",
+		"deploy": "npm run build && wrangler pages deploy",
 		"dev": "remix vite:dev",
 		"lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
 		"formatcheck": "prettier --check \"**/*.{ts,tsx,md}\"",
@@ -13,9 +13,9 @@
 		"start": "wrangler pages dev ./build/client",
 		"typecheck": "tsc",
 		"typegen": "wrangler types",
-		"preview": "pnpm run build && wrangler pages dev",
-		"test:e2e": "pnpm playwright test",
-		"test:e2e:ui": "pnpm test:e2e --ui",
+		"preview": "npm run build && wrangler pages dev",
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "npm run test:e2e --ui",
 		"test:ct": "playwright test -c playwright-ct.config.ts",
 		"test:vitest": "vitest run",
 		"build:mocks": "wrangler deploy --minify --outdir ./dist --dry-run --name 'mock-ai' --compatibility-date '2024-03-12' ./card-manager/test/ai.mock.ts"
@@ -55,11 +55,10 @@
 		"vite-tsconfig-paths": "^4.2.1",
 		"wrangler": "^3.72.0",
 		"prettier": "^3.3.3",
-		"vitest": "^1.5.3",
-		"@cloudflare/vitest-pool-workers": "^0.4.23",
-		"@vitest/ui": "^1.5.3"
+		"vitest": "1.5.x",
+		"@vitest/ui": "1.5.x",
+		"@cloudflare/vitest-pool-workers": "^0.4.23"
 	},
-	"packageManager": "pnpm@8.15.6",
 	"engines": {
 		"node": ">=20.0.0"
 	}

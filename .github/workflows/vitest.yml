@@ -14,6 +14,6 @@ jobs:
         with:
           node-version: lts/*
       - name: Install dependencies
-        run: npm install -g pnpm && pnpm install
+        run: npm ci
       - name: Run Vitest
-        run: pnpm test:vitest
+        run: npm run test:vitest
