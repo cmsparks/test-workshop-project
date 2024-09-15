@@ -1,9 +1,5 @@
 name: Vitest workers-library
-on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+on: push
 jobs:
   test:
     timeout-minutes: 60
