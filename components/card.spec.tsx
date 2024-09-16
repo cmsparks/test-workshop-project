@@ -8,7 +8,7 @@ test('should display the card details', async ({ mount }) => {
 		<Card
 			cardDetails={{
 				isNew: false,
-				img: 'test',
+				imageUrl: '/image/test',
 				title: 'test-title',
 				description: 'test-description',
 			}}
@@ -28,7 +28,7 @@ test('should call new card effect on new cards', async ({ mount }) => {
 		<Card
 			cardDetails={{
 				isNew: true,
-				img: 'test',
+				imageUrl: '/image/test',
 				title: 'test-title',
 				description: 'test-description',
 			}}
@@ -47,7 +47,7 @@ test('should not call new card effect on new cards', async ({ mount }) => {
 		<Card
 			cardDetails={{
 				isNew: false,
-				img: 'test',
+				imageUrl: '/image/test',
 				title: 'test-title',
 				description: 'test-description',
 			}}

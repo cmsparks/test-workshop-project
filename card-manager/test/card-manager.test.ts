@@ -1,6 +1,6 @@
 import { afterEach, assert, describe, expect, it, vi } from 'vitest';
 import { env } from 'cloudflare:test';
-import TradingCardManager, { AiImageModel, Card } from '../card-manager';
+import { type AiImageModel, type Card, TradingCardManager } from 'card-manager';
 
 afterEach(() => {
 	vi.spyOn(env.AI, 'run').mockRestore();
@@ -8,12 +8,7 @@ afterEach(() => {
 
 describe('test CardManager class', () => {
 	// type cast is due to some weirdness with the AI workers types. See env.ts
-	const cardManager = new TradingCardManager(
-		env.KV,
-		env.AI as AiImageModel,
-		env.R2,
-		env.BUCKET_DOMAIN
-	);
+	const cardManager = new TradingCardManager(env.KV, env.AI as AiImageModel, env.R2);
 
 	it('generateAndSaveCard()', async () => {
 		const title = 'test title';
@@ -49,7 +44,6 @@ describe('test CardManager class', () => {
 		const kvCard = (await env.KV.get(cardKey, 'json')) as Card;
 		expect(kvCard.title).toStrictEqual('test title');
 		expect(kvCard.description).toStrictEqual('test description');
-		expect(kvCard.imageUrl).toStrictEqual(`https://${env.BUCKET_DOMAIN}/${cardKey}`);
 	});
 
 	it('generateCardArt()', async () => {
@@ -91,13 +85,12 @@ describe('test CardManager class', () => {
 			JSON.stringify({
 				title: 'test title',
 				description: 'test description',
-				imageUrl: 'https://example.com/testKey',
 			})
 		);
 
 		const card = await cardManager.getCard(uuid);
 		expect(card?.title).toStrictEqual('test title');
 		expect(card?.description).toStrictEqual('test description');
-		expect(card?.imageUrl).toStrictEqual('https://example.com/testKey');
+		expect(card?.imageUrl).toMatch(/^\/image\/.*$/);
 	});
 });

@@ -3,6 +3,7 @@ import { Form, redirect, useActionData, useLoaderData, useNavigation } from '@re
 
 import Card from '@components/card';
 import confetti from 'canvas-confetti';
+import { type AiImageModel, TradingCardManager } from 'card-manager';
 
 export const meta: MetaFunction = () => {
 	return [
@@ -14,35 +15,66 @@ export const meta: MetaFunction = () => {
 	];
 };
 
-export async function loader({ request, context: _context }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
 	const url = new URL(request.url);
 	const searchParams = url.searchParams;
 	const cardId = searchParams.get('card-id');
 	const retrieveCardDetails = !!cardId;
 	if (retrieveCardDetails) {
 		const isNew = !!searchParams.get('new');
-		// TODO: fetch card details from KV
+
+		const { env } = context.cloudflare;
+
+		const cardManager = new TradingCardManager(
+			env.KV,
+			env.AI as unknown as AiImageModel,
+			env.BUCKET
+		);
+
+		const card = await cardManager.getCard(cardId);
+
+		if (!card) {
+			return null;
+		}
+
 		return {
 			isNew,
-			title: 'a test title',
-			description: 'a test description',
-			img: 'test image',
+			...card,
 		};
 	}
 	return null;
 }
 
-export async function action({ context: _context, request: _request }: ActionFunctionArgs) {
-	// TODO: save card to KV and generate image
-	const cardSaved = await new Promise<boolean>((r) =>
-		setTimeout(() => {
-			r(true);
-		}, 2_000)
-	);
-	if (cardSaved) {
-		return redirect('/?card-id=123&new=1');
-	} else {
-		const error = 'an error occurred';
+export async function action({ context, request }: ActionFunctionArgs) {
+	try {
+		const body = await request.formData();
+		const title = body.get('card-title');
+		const description = body.get('card-description');
+
+		if (!title) {
+			return { error: 'no title was provided' };
+		}
+
+		if (!description) {
+			return { error: 'no description was provided' };
+		}
+
+		const { env } = context.cloudflare;
+
+		const cardManager = new TradingCardManager(
+			env.KV,
+			env.AI as unknown as AiImageModel,
+			env.BUCKET
+		);
+
+		const cardId = await cardManager.generateAndSaveCard({
+			title: title.toString(),
+			description: description.toString(),
+		});
+
+		return redirect(`/?card-id=${cardId}&new=1`);
+	} catch (e) {
+		const error = `Error: ${e instanceof Error ? e.message : e}`;
 		return { error };
 	}
 }
@@ -99,7 +131,11 @@ export default function Index() {
 							required
 						></textarea>
 					</div>
-					<button data-testid="card-generate-btn" className="btn btn--generate">
+					<button
+						data-testid="card-generate-btn"
+						disabled={submitting}
+						className={'btn btn--generate'}
+					>
 						Generate
 					</button>
 				</Form>
