@@ -5,7 +5,7 @@ This directory contains the presentation's project, implemented using vite and [
 We can start presenting it with:
 
 ```sh
-$ pnpm dev
+$ npm run dev
 ```
 
 This will start the presentation on http://localhost:5173, that's what we want to present.
