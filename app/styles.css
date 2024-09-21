@@ -154,8 +154,13 @@ html {
 	background-color: #00679f;
 	color: #ffffff;
 
-	&:active {
+	&:not(:disabled):active {
 		translate: 0 2px;
+	}
+
+	&:disabled {
+		opacity: 0.2;
+		cursor: not-allowed;
 	}
 
 	&.btn--generate {

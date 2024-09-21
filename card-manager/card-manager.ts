@@ -40,12 +40,11 @@ function isCard(card: unknown): card is Card {
 /**
  * Trading card manager class that wraps KV, R2, and Workers AI. Handles all of our "business" logic
  */
-export default class TradingCardManager {
+export class TradingCardManager {
 	constructor(
 		public kvBinding: KVNamespace,
 		public aiBinding: AiImageModel,
-		public r2Binding: R2Bucket,
-		public bucketDomain: string
+		public r2Binding: R2Bucket
 	) {}
 
 	/**
@@ -54,11 +53,6 @@ export default class TradingCardManager {
 	 */
 	async generateAndSaveCard(card: Pick<Card, 'title' | 'description'>): Promise<string> {
 		const key = crypto.randomUUID();
-
-		const cardToSave = {
-			...card,
-			imageUrl: `https://${this.bucketDomain}/${key}`,
-		};
 
 		const cardData = await this.generateCardArt(card);
 
@@ -87,7 +81,7 @@ export default class TradingCardManager {
 
 		await Promise.all([
 			this.r2Binding.put(key, arrayBuffer),
-			this.kvBinding.put(key, JSON.stringify(cardToSave)),
+			this.kvBinding.put(key, JSON.stringify(card)),
 		]);
 
 		return key;
@@ -124,12 +118,17 @@ export default class TradingCardManager {
 	 * @returns card from cardKey
 	 */
 	async getCard(cardKey: string): Promise<Card | null> {
-		const card = await this.kvBinding.get(cardKey, 'json');
+		const partialCard = await this.kvBinding.get<Omit<Card, 'imageUrl'>>(cardKey, 'json');
 
-		if (!card) {
+		if (!partialCard) {
 			// key not found
 			return null;
 		}
+
+		const card = {
+			...partialCard,
+			imageUrl: `/image/${cardKey}`,
+		};
 
 		if (!isCard(card)) {
 			throw new Error('Invalid card returned from KV');

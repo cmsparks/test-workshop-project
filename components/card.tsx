@@ -1,11 +1,9 @@
+import type { Card } from 'card-manager';
 import { useEffect } from 'react';
 
 type Props = {
-	cardDetails: {
+	cardDetails: Card & {
 		isNew?: boolean;
-		img: string;
-		title: string;
-		description: string;
 	};
 	newCardEffect: () => void;
 };
@@ -19,9 +17,12 @@ export default ({ cardDetails, newCardEffect }: Props) => {
 
 	return (
 		<div className="card">
-			<div className="card__image" data-testid="card-img">
-				{cardDetails.img}
-			</div>
+			<img
+				className="card__image"
+				data-testid="card-img"
+				src={cardDetails.imageUrl}
+				alt="card illustration"
+			/>
 			<p className="card__title" data-testid="card-title-output">
 				{cardDetails.title}
 			</p>
