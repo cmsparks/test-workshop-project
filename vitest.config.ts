@@ -13,9 +13,6 @@ export default defineWorkersProject({
 					compatibilityFlags: ['nodejs_compat'],
 					kvNamespaces: ['KV'],
 					r2Buckets: ['R2'],
-					bindings: {
-						BUCKET_DOMAIN: 'example.com',
-					},
 					// https://github.com/cloudflare/workers-sdk/blob/main/packages/miniflare/README.md#browser-rendering-and-workers-ai
 					// AI Bindings currently aren't supported, so we need to mock the API ourselves.
 					wrappedBindings: {
