@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/experimental-ct-react';
-import sinon from 'sinon';
+import { fn } from '@vitest/spy';
 
 import Card from './card';
 
@@ -23,7 +23,7 @@ test('should display the card details', async ({ mount }) => {
 });
 
 test('should call new card effect on new cards', async ({ mount }) => {
-	const newCardEffectSpy = sinon.spy();
+	const newCardEffectSpy = fn();
 	const component = await mount(
 		<Card
 			cardDetails={{
@@ -38,11 +38,11 @@ test('should call new card effect on new cards', async ({ mount }) => {
 	// let's wait for some element of the card to be visible
 	await expect(component.getByTestId('card-img')).toBeVisible();
 
-	expect(newCardEffectSpy.calledOnce).toBeTruthy();
+	expect(newCardEffectSpy.mock.calls.length).toEqual(1);
 });
 
 test('should not call new card effect on new cards', async ({ mount }) => {
-	const newCardEffectSpy = sinon.spy();
+	const newCardEffectSpy = fn();
 	const component = await mount(
 		<Card
 			cardDetails={{
@@ -57,5 +57,5 @@ test('should not call new card effect on new cards', async ({ mount }) => {
 	// let's wait for some element of the card to be visible
 	await expect(component.getByTestId('card-img')).toBeVisible();
 
-	expect(newCardEffectSpy.called).toBeFalsy();
+	expect(newCardEffectSpy.mock.calls.length).toEqual(0);
 });
