@@ -12,5 +12,4 @@ id = "5497e0fbe1b645bcab9086f279c8e2e3"
 
 [[r2_buckets]]
 binding = "BUCKET"
-bucket_name = "my-bucket"
-preview_bucket_name = "my-bucket"
+bucket_name = "dc-react-summit-nov-2024-demo"
