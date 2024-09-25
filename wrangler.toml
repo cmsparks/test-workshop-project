@@ -8,10 +8,8 @@ binding = "AI"
 
 [[kv_namespaces]]
 binding = "KV"
-id = "d3ea0404d06e4a3faf801adfa28dd9fe"
-preview_id = "33b04eede7b04caf81257b09f3bbf53a"
+id = "5497e0fbe1b645bcab9086f279c8e2e3"
 
 [[r2_buckets]]
 binding = "BUCKET"
-bucket_name = "my-bucket"
-preview_bucket_name = "my-bucket"
+bucket_name = "dc-react-summit-nov-2024-demo"
